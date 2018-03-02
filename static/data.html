@@ -1,0 +1,172 @@
+
+Display Lecturer:<select id="sel1"></select><br>
+Display Group of Student:<select id="sel2"></select><br>
+Display Course:<select id="sel3"></select><br>
+
+Insert new group:<br>
+Group's Degree Programm:<input type="text" id="degree"></td></tr><br>
+Group's Code:<input type="text" id="code"></td></tr><br>
+<button onClick="postGroup()">Add Group</button><br>
+
+Insert new curriculum:<br>
+Select group id:<select id="sel5"></select>
+<button onClick="postCurriculum()">Add Curriculum</button><br>
+
+Insert new course:<br>
+Course's code:<input type="text" id="Code"></td></tr><br>
+Course's name:<input type="text" id="Name"></td></tr><br>
+Course's credit:<input type="text" id="Cre"></td></tr><br>
+Course's Curriculum:<select id="sel4"></select>
+<button onClick="postCourse()">Add Course</button><br>
+
+<script>
+displayGroup();
+function postGroup(){
+ var groupDegree=document.getElementById("degree");
+ var groupCode=document.getElementById("code");
+ var jsonData = '{"code":' + JSON.stringify(groupCode.value) + ',"degreeprogram":' + JSON.stringify(groupDegree.value) + '}';
+ var request = new XMLHttpRequest();
+ request.open("POST", "http://localhost:8000/groupstudys/", false);
+ request.setRequestHeader("Authorization", "Basic " + btoa("admin:password123"));
+ request.setRequestHeader("X-CSRFToken", readCookie("csrftoken"));
+ request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+ request.send(jsonData); 
+ var array = JSON.parse(request.responseText);
+ displayGroup();
+ console.log(array);
+}
+
+displayCurriculum();
+function postCurriculum(){
+ var curriculumGroupid=document.getElementById("sel5");
+ var jsonData1 = '{"groupid":' + JSON.stringify(curriculumGroupid.value) + '}';
+ var request = new XMLHttpRequest();
+ request.open("POST", "http://localhost:8000/curriculums/", false);
+ request.setRequestHeader("Authorization", "Basic " + btoa("admin:password123"));
+ request.setRequestHeader("X-CSRFToken", readCookie("csrftoken"));
+ request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+ request.send(jsonData1); 
+ var array = JSON.parse(request.responseText);
+ displayGroup1();
+ console.log(array);
+}
+
+displayCourse();
+function postCourse(){
+ var courseCode=document.getElementById("Code");
+ var courseName=document.getElementById("Name");
+ var courseCredit=document.getElementById("Cre");
+ var courseCurriculum=document.getElementById("sel4");
+ var jsonData1 = '{"code":' + JSON.stringify(courseCode.value) + ',"name":' + JSON.stringify(courseName.value) + ',"credit":' + JSON.stringify(courseCredit.value) + ',"curriculumid":' + JSON.stringify(courseCurriculum.value) +'}';
+ var request = new XMLHttpRequest();
+ request.open("POST", "http://localhost:8000/courses/", false);
+ request.setRequestHeader("Authorization", "Basic " + btoa("admin:password123"));
+ request.setRequestHeader("X-CSRFToken", readCookie("csrftoken"));
+ request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+ request.send(jsonData1); 
+ var array = JSON.parse(request.responseText);
+ displayCurriculum();
+ console.log(array);
+}
+displayTeacher();
+function displayTeacher(){
+	var request = new XMLHttpRequest();
+	request.open("GET", "http://localhost:8000/teachers/", false);
+	request.setRequestHeader("Authorization", "Basic " + btoa("admin:password123"));
+	request.setRequestHeader("X-CSRFToken", readCookie("csrftoken"));
+	request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+	request.send();
+	arrayTeacher = JSON.parse(request.responseText);
+	console.log(arrayTeacher);
+	var selectElement = document.getElementById("sel1");
+	var i, options="";
+	for(i = 0; i < arrayTeacher.length; i++)
+	{
+		options = options + "<option>" + arrayTeacher[i].name + "/" + arrayTeacher[i].code + "</option>";
+	}
+	selectElement.innerHTML = options;
+}
+
+function displayGroup(){
+	var request = new XMLHttpRequest();
+	request.open("GET", "http://localhost:8000/groupstudys/", false);
+	request.setRequestHeader("Authorization", "Basic " + btoa("admin:password123"));
+	request.setRequestHeader("X-CSRFToken", readCookie("csrftoken"));
+	request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+	request.send();
+	arrayGroupstudy = JSON.parse(request.responseText);
+	var selectElement = document.getElementById("sel2");
+	var i, options="";
+	for(i = 0; i < arrayGroupstudy.length; i++)
+	{
+		options = options + "<option>" + arrayGroupstudy[i].code + "/" + arrayGroupstudy[i].degreeprogram + "</option>";
+	}
+	selectElement.innerHTML = options;
+}
+
+displayGroup1();
+function displayGroup1(){
+	var request = new XMLHttpRequest();
+	request.open("GET", "http://localhost:8000/groupstudys/", false);
+	request.setRequestHeader("Authorization", "Basic " + btoa("admin:password123"));
+	request.setRequestHeader("X-CSRFToken", readCookie("csrftoken"));
+	request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+	request.send();
+	arrayGroupstudy = JSON.parse(request.responseText);
+	console.log(arrayGroupstudy);
+	var selectElement = document.getElementById("sel5");
+	var i, options="";
+	for(i = 0; i < arrayGroupstudy.length; i++)
+	{
+		options = options + "<option>" + arrayGroupstudy[i].url + "</option>";
+	}
+	selectElement.innerHTML = options;
+}
+
+function displayCourse(){
+	var request = new XMLHttpRequest();
+	request.open("GET", "http://localhost:8000/courses/", false);
+	request.setRequestHeader("Authorization", "Basic " + btoa("admin:password123"));
+	request.setRequestHeader("X-CSRFToken", readCookie("csrftoken"));
+	request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+	request.send();
+	arrayCourse = JSON.parse(request.responseText);
+	var selectElement = document.getElementById("sel3");
+	var i, options="";
+	for(i = 0; i < arrayCourse.length; i++)
+	{
+		options = options + "<option>" + arrayCourse[i].code + "/" + arrayCourse[i].name + "/" + arrayCourse[i].credit + "</option>";
+	}
+	selectElement.innerHTML = options;
+}
+
+
+function displayCurriculum(){
+	var request = new XMLHttpRequest();
+	request.open("GET", "http://localhost:8000/curriculums/", false);
+	request.setRequestHeader("Authorization", "Basic " + btoa("admin:password123"));
+	request.setRequestHeader("X-CSRFToken", readCookie("csrftoken"));
+	request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+	request.send();
+	arrayCurriculum = JSON.parse(request.responseText);
+	console.log(arrayCurriculum);
+	var selectElement = document.getElementById("sel4");
+	var i, options="";
+	for(i = 0; i < arrayCurriculum.length; i++)
+	{
+		options = options + "<option>" + arrayCurriculum[i].url + "</option>";
+	}
+	selectElement.innerHTML = options;
+}
+
+function readCookie(name) {
+ var nameEQ = encodeURIComponent(name) + "=";
+ var ca = document.cookie.split(';');
+ for (var i = 0; i < ca.length; i++) {
+ var c = ca[i];
+ while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+ if (c.indexOf(nameEQ) === 0) return decodeURIComponent(c.substring(nameEQ.length, c.length));
+ }
+ return null;
+}
+</script>

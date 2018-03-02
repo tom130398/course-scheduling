@@ -1,0 +1,11 @@
+1.teaching by teacher per year
+select distinct teacher.name, course.name from (((teacher inner join teacher_implementation on teacher.id = teacherid)inner join implementation on implementationid = implementation.id)inner join course on courseid = course.id);
+
+2.teaching by student group
+select distinct implementation.group, course.name from(implementation inner join course on courseid = course.id)
+
+3.Student groups by degree program
+select * from groupstudy
+
+4.Teachers by degree program 
+select teacher.name, groupstudy.degreeprogram from(teacher inner join 
