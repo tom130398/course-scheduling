@@ -2,6 +2,9 @@
 Display Lecturer:<select id="sel1"></select><br>
 Display Group of Student:<select id="sel2"></select><br>
 Display Course:<select id="sel3"></select><br>
+Display Teacher by Course:<select id="teacher_course"></select><br>
+Display Teacher by Degree:<select id="list_teacher_by_degree"></select><br>
+Display Course by Group:<select id="student_course"></select><br>
 
 Insert new group:<br>
 Group's Degree Programm:<input type="text" id="degree"></td></tr><br>
@@ -158,6 +161,80 @@ function displayCurriculum(){
 	}
 	selectElement.innerHTML = options;
 }
+
+function getTeacherCourse() {
+	let request = new XMLHttpRequest();
+	request.open("GET", "/teachercourse/", false);
+	request.setRequestHeader("Authorization", "Basic " + btoa("admin:password123"));
+	request.setRequestHeader("X-CSRFToken", readCookie("csrftoken"));
+	request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+	request.send();
+	allTeacherCourse = JSON.parse(request.responseText);
+	return allTeacherCourse;
+}
+
+function getStudentCourse() {
+	let request = new XMLHttpRequest();
+	request.open("GET", "/studentcourse/", false);
+	request.setRequestHeader("Authorization", "Basic " + btoa("admin:password123"));
+	request.setRequestHeader("X-CSRFToken", readCookie("csrftoken"));
+	request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+	request.send();
+	allStudentCourse = JSON.parse(request.responseText);
+	return allStudentCourse;
+}
+
+function getTeacherDegree() {
+	let request = new XMLHttpRequest();
+	request.open("GET", "/teacherdegree/", false);
+	request.setRequestHeader("Authorization", "Basic " + btoa("admin:password123"));
+	request.setRequestHeader("X-CSRFToken", readCookie("csrftoken"));
+	request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+	request.send();
+	allTeacherDegree = JSON.parse(request.responseText);
+	return allTeacherDegree;
+}
+
+function displayTeacherCourse() {
+	allTeacherCourse = getTeacherCourse();
+	let teacher_course = document.getElementById("teacher_course");
+	let i, options="";
+	for(i = 0; i <allTeacherCourse.length; i++){
+		options = options + '<option value="' + i + '">'  + allTeacherCourse[i].teacher + "/" + allTeacherCourse[i].course + "</option>";
+	}
+	teacher_course.innerHTML = options;
+}
+displayTeacherCourse();
+
+function displayStudentCourse() {
+	allStudentCourse = getStudentCourse();
+	let student_course = document.getElementById("student_course");
+	let i, options="";
+	let groups = new Set();
+	for(i = 0; i <allStudentCourse.length; i++)
+		groups.add(allStudentCourse[i].group)
+	groups = Array.from(groups);
+	for(i = 0; i <allStudentCourse.length; i++){
+		options = options + '<option value="' + i + '">'  + allStudentCourse[i].group + "/" + allStudentCourse[i].course + "</option>";
+	}
+	student_course.innerHTML = options;
+}
+displayStudentCourse();
+
+function displayTeacherDegree() {
+	allTeacher = getTeacherDegree();
+	let teacher_by_degree = document.getElementById("list_teacher_by_degree");
+	let i, options="";
+	let degree = new Set();
+	for(i = 0; i <allTeacher.length; i++)
+		degree.add(allTeacher[i].degree)
+	degree = Array.from(degree);
+	for(i = 0; i <allTeacher.length; i++){
+		options = options + '<option value="' + i + '">'  + allTeacher[i].degree + "/" + allTeacher[i].teacherName + "</option>";
+	}
+	teacher_by_degree.innerHTML = options;
+}
+displayTeacherDegree();
 
 function readCookie(name) {
  var nameEQ = encodeURIComponent(name) + "=";

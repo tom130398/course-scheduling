@@ -8,4 +8,4 @@ select distinct implementation.group, course.name from(implementation inner join
 select * from groupstudy
 
 4.Teachers by degree program 
-select teacher.name, groupstudy.degreeprogram from(teacher inner join 
+select distinct teacher.name, groupstudy.degreeprogram from (((teacher inner join teacher_implementation on teacher.id = teacherid)inner join implementation on implementationid = implementation.id) inner join groupstudy on implementation.group LIKE CONCAT('%', groupstudy.code ,'%'))

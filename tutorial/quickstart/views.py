@@ -7,6 +7,8 @@ from .models import Room
 from .models import Teacher
 from .models import TeacherImplementation
 from rest_framework import viewsets
+from django.db import connection
+from django.http import JsonResponse
 from tutorial.quickstart.serializers import CourseSerializer, CurriculumSerializer, GroupstudySerializer, ImplementationSerializer, RoomSerializer, TeacherSerializer, TeacherImplementationSerializer
 
 class CourseViewSet(viewsets.ModelViewSet):
@@ -51,3 +53,27 @@ class TeacherImplementationViewSet(viewsets.ModelViewSet):
     """
     queryset = TeacherImplementation.objects.all()
     serializer_class = TeacherImplementationSerializer
+def teacher_course(self):
+    with connection.cursor() as cursor:
+        cursor.execute("select distinct(teacher.name), course.name from teacher inner join teacher_implementation on teacher.id = teacherid inner join implementation on implementationid = implementation.id inner join course on courseid = course.id;")
+        rows = cursor.fetchall()
+    data = []
+    for row in rows:
+        data.append({"teacher":row[0],"course":row[1]})
+    return JsonResponse(data, safe=False)
+def student_course(self):
+    with connection.cursor() as cursor:
+        cursor.execute("select course.name, implementation.group from implementation inner join course on courseid = course.id;")
+        rows = cursor.fetchall()
+    data = []
+    for row in rows:
+        data.append({"course":row[0],"group":row[1]})
+    return JsonResponse(data, safe=False)
+def teacher_degree(self):
+    with connection.cursor() as cursor:
+        cursor.execute("select distinct teacher.name, groupstudy.degreeprogram from (((teacher inner join teacher_implementation on teacher.id = teacherid)inner join implementation on implementationid = implementation.id) inner join groupstudy on implementation.group LIKE CONCAT('%', groupstudy.code ,'%'));")
+        rows = cursor.fetchall()
+    data = []
+    for row in rows:
+        data.append({"teacherName":row[0],"degree":row[1]})
+    return JsonResponse(data, safe=False)
